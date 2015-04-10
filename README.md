@@ -1,1 +1,1 @@
-#This is the fenix Service, you create a service running on boot, then this create another service. After reboot, the other service run and both of them are deleted
+#This is the fenix Service, it creates a service running on boot, then it creates another service. After reboot, the other service runs and both of them are deleted
