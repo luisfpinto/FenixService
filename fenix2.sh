@@ -331,7 +331,7 @@ chooseName () {
  FILE="/etc/hostapd/hostapd.conf";
  LINE=$(grep SSID prueba);
  #Replacing name.
- sed -i "s/netbeast-xy/xway-$SSID_NAME/g" $FILE
+ sed -i "s/default/Netbeast-$SSID_NAME/g" $FILE
 
 }
 
@@ -339,48 +339,14 @@ case "$1" in
   start)
 chooseName
 echo "Starting resize_write "
-        #How to know if /root/dev exists. -h verify if there is a symlink.
-        if ! [ -h /dev/root ]; then
-            echo "xy-filexpand_error: /dev/root does not exist or is not a symlink. Don't know how to expand" >> /var/log/xy-filexpand.log
-            return 0
-        fi
-        #Which partition has root.
-        ROOT_PART=$(readlink /dev/root)
-        #Partition number which contents root.
-        PART_NUM=${ROOT_PART#mmcblk0p}
-
-        if [ "$PART_NUM" = "$ROOT_PART" ]; then
-            echo "xy-filexpand_error: /dev/root is not an SD card. Don't know how to expand" > /var/log/xy-filexpand.log
-            return 0
-        fi
-
-        # NOTE: the NOOBS partition layout confuses parted. For now, let's only 
-        # agree to work with a sufficiently simple partition layout
-        if [ "$PART_NUM" -ne 2 ]; then
-            echo "partition root must be number 2 and it is not" > /var/log/xy-filexpand.log
-            return 0
-        fi
-
-        LAST_PART_NUM=$(parted /dev/mmcblk0 -ms unit s p | tail -n 1 | cut -f 1 -d:)
-
-        if [ "$LAST_PART_NUM" != "$PART_NUM" ]; then
-            echo "xy-filexpand_error: /dev/root is not the last partition. Don't know how to expand" > /var/log/xy-filexpand.log
-            return 0
-        fi
-
-        # Get the starting offset of the root partition
-        PART_START=$(parted /dev/mmcblk0 -ms unit s p | grep "^${PART_NUM}" | cut -f 2 -d:)
-        [ "$PART_START" ] || return 1
-        # Return value will likely be error for fdisk as it fails to reload the
-        # partition table because the root fs is mounted
         fdisk /dev/mmcblk0 <<EOF
         p
         d
-        $PART_NUM
+        2
         n
         p
-        $PART_NUM
-        $PART_START
+        2
+        122880
 
         p
         w
@@ -406,7 +372,7 @@ EOF
         echo "case \"\$1\" in" >> /etc/init.d/resize_execute
         echo "start)" >> /etc/init.d/resize_execute
 echo "Resizing filesystem" >> /etc/init.d/resize_execute
-echo "resize2fs /dev/root" >> /etc/init.d/resize_execute
+echo "resize2fs /dev/mmcblk0p2" >> /etc/init.d/resize_execute
 echo "update-rc.d resize_execute remove" >> /etc/init.d/resize_execute
 echo "rm /etc/init.d/resize_write" >> /etc/init.d/resize_execute
 echo "rm /etc/init.d/resize_execute" >> /etc/init.d/resize_execute
