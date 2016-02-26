@@ -332,8 +332,8 @@ chooseName () {
  #Replacing name.
  sed -i "s/default/Netbeast-$SSID_NAME/g" $FILE
  #Change hostname
- echo $SSID_NAME > /etc/hostname
- echo 127.0.1.1 $SSID_NAME >> /etc/hosts 
+ echo Netbeast-$SSID_NAME > /etc/hostname
+ echo 127.0.1.1 Netbeast-$SSID_NAME >> /etc/hosts 
 
 }
 
