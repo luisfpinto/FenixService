@@ -329,9 +329,11 @@ chooseName () {
  SSID_NAME=${ANIMALS[INDEX]}; 
  #Changing the SSID Name
  FILE="/etc/hostapd/hostapd.conf";
- LINE=$(grep SSID prueba);
  #Replacing name.
  sed -i "s/default/Netbeast-$SSID_NAME/g" $FILE
+ #Change hostname
+ echo $SSID_NAME > /etc/hostname
+ echo 127.0.1.1 $SSID_NAME >> /etc/hosts 
 
 }
 
